@@ -5,23 +5,23 @@
 #include <time.h>
 #include <fstream>
 
-#define MAX 173  /// 86 * 2 + 1 = 173
-#define CELL 7500  /// 86 * 86 = 7396
+#define Dim 161  /// 80 * 2 + 1 = 161 : 80 representa el ancho de la pantalla de consola
+#define CELL 6400  /// 80 * 80 = 6400
 #define muro 1
 #define camino 0
 
 using namespace std;
 
-void init_maze(int maze[MAX][MAX]);
-void maze_generator(int indeks, int maze[MAX][MAX], int x_retorno[CELL], int y_retorno[CELL], int x, int y, int n, int visitado);
-void print_maze(int maze[MAX][MAX], int dimension);
-int is_closed(int maze[MAX][MAX], int x, int y);
+void plantilla(int maze[Dim][Dim]);
+void generador(int indeks, int maze[Dim][Dim], int x_retorno[CELL], int y_retorno[CELL], int x, int y, int n, int visitado);
+void mostrar(int maze[Dim][Dim], int dimension);
+int is_closed(int maze[Dim][Dim], int x, int y);
 
-void init_maze(int maze[MAX][MAX])
+void plantilla(int maze[Dim][Dim])
 {
-     for(int i= 0; i< MAX; i++)
+     for(int i= 0; i< Dim; i++)
      {
-         for(int j= 0; j< MAX; j++)
+         for(int j= 0; j< Dim; j++)
          {
              if(i%2==0 || j%2==0)
                  maze[i][j]= 1;
@@ -32,7 +32,7 @@ void init_maze(int maze[MAX][MAX])
      
 }
 
-void maze_generator(int indeks, int maze[MAX][MAX], int x_retorno[CELL], int y_retorno[CELL], int x, int y, int n, int visitado)
+void generador(int indeks, int maze[Dim][Dim], int x_retorno[CELL], int y_retorno[CELL], int x, int y, int n, int visitado)
 {
     if(visitado< n*n)
     {
@@ -112,11 +112,11 @@ void maze_generator(int indeks, int maze[MAX][MAX], int x_retorno[CELL], int y_r
             visitado++;
         }
 
-        maze_generator(indeks, maze, x_retorno, y_retorno, x_sig, y_sig, n, visitado);
+        generador(indeks, maze, x_retorno, y_retorno, x_sig, y_sig, n, visitado);
     }
 }
 
-void print_maze(int maze[MAX][MAX], int dimension)
+void mostrar(int maze[Dim][Dim], int dimension)
 {
 	ofstream lab;
 	
@@ -148,7 +148,7 @@ void print_maze(int maze[MAX][MAX], int dimension)
     }
 }
 
-int is_closed(int maze[MAX][MAX], int x, int y)
+int is_closed(int maze[Dim][Dim], int x, int y)
 {
     if(maze[x-1][y]==muro && maze[x][y-1]==muro && maze[x][y+1]==muro && maze[x+1][y]==muro)
         return 1;
@@ -171,18 +171,18 @@ int main()
     srand(time(NULL));
     int size= dimension / 2;
     int indeks= 0;
-    int maze[MAX][MAX];
+    int maze[Dim][Dim];
     int x_retorno[CELL];
     int y_retorno[CELL];
 
-    init_maze(maze);
+    plantilla(maze);
 
     x_retorno[indeks]= 1;
     y_retorno[indeks]= 1;
 
-    maze_generator(indeks, maze, x_retorno, y_retorno, 1, 1, size, 1);
+    generador(indeks, maze, x_retorno, y_retorno, 1, 1, size, 1);
     maze[0][1]= maze[size * 2][size * 2 - 1]= ' ';
-    print_maze(maze, size);
+    mostrar(maze, size);
 
     return 0;
 }
