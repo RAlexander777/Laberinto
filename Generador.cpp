@@ -19,7 +19,7 @@ void Menu();
 void Puntos();
 
 void plantilla(int laberinto[Dim][Dim]);
-void generador(int indeks, int laberinto[Dim][Dim], int x_retorno[Celdas], int y_retorno[Celdas], int x, int y, int n, int visitado);
+void generador(int inicio_final, int laberinto[Dim][Dim], int x_retorno[Celdas], int y_retorno[Celdas], int x, int y, int n, int visitado);
 void mostrar(int laberinto[Dim][Dim], int dimension);
 int sin_salida(int laberinto[Dim][Dim], int x, int y);
 
@@ -75,7 +75,7 @@ void plantilla(int laberinto[Dim][Dim])
      
 }
 
-void generador(int indeks, int laberinto[Dim][Dim], int x_retorno[Celdas], int y_retorno[Celdas], int x, int y, int n, int visitado)
+void generador(int inicio_final, int laberinto[Dim][Dim], int x_retorno[Celdas], int y_retorno[Celdas], int x, int y, int n, int visitado)
 {
     if(visitado< n*n)
     {
@@ -126,9 +126,9 @@ void generador(int indeks, int laberinto[Dim][Dim], int x_retorno[Celdas], int y
 
         if(vecino_true == -1)
         {
-            x_sig = x_retorno[indeks];
-            y_sig = y_retorno[indeks];
-            indeks--;
+            x_sig = x_retorno[inicio_final];
+            y_sig = y_retorno[inicio_final];
+            inicio_final--;
         }
 
         if(vecino_true!=-1)
@@ -137,9 +137,9 @@ void generador(int indeks, int laberinto[Dim][Dim], int x_retorno[Celdas], int y
             int random = rand()%asignar;
             x_sig = vecino_x[random];
             y_sig = vecino_y[random];
-            indeks++;
-            x_retorno[indeks]= x_sig;
-            y_retorno[indeks]= y_sig;
+            inicio_final++;
+            x_retorno[inicio_final]= x_sig;
+            y_retorno[inicio_final]= y_sig;
 
             int rpasos = pasos[random];
 
@@ -154,7 +154,7 @@ void generador(int indeks, int laberinto[Dim][Dim], int x_retorno[Celdas], int y
             visitado++;
         }
 
-        generador(indeks, laberinto, x_retorno, y_retorno, x_sig, y_sig, n, visitado);
+        generador(inicio_final, laberinto, x_retorno, y_retorno, x_sig, y_sig, n, visitado);
     }
 }
 
@@ -202,6 +202,11 @@ int sin_salida(int laberinto[Dim][Dim], int x, int y)
 void Menu()
 {
 	
+	srand(time(NULL));
+    int inicio_final= 0;
+    int laberinto[Dim][Dim];
+    int x_retorno[Celdas];
+    int y_retorno[Celdas];
 	int dimension;
 	char op;
 	
@@ -219,20 +224,15 @@ void Menu()
 		cout<<"La dimension maxima permitida es 78*78";
 		Sleep(3000);
 		system("cls");
+		
 		return Menu();
 	}
 
-    srand(time(NULL));
-    int tamanio= dimension / 2;
-    int indeks= 0;
-    int laberinto[Dim][Dim];
-    int x_retorno[Celdas];
-    int y_retorno[Celdas];
-
+	int tamanio= dimension / 2;
     plantilla(laberinto);
 
-    x_retorno[indeks]= 1;
-    y_retorno[indeks]= 1;
+    x_retorno[inicio_final]= 1;
+    y_retorno[inicio_final]= 1;
     
     gotoxy(35,11);
     cout<<"Generando";
@@ -240,7 +240,7 @@ void Menu()
     
     system("cls");
 
-    generador(indeks, laberinto, x_retorno, y_retorno, 1, 1, tamanio, 1);
+    generador(inicio_final, laberinto, x_retorno, y_retorno, 1, 1, tamanio, 1);
     laberinto[0][1]= laberinto[tamanio * 2][tamanio * 2 - 1]= ' ';
     mostrar(laberinto, tamanio);
 
