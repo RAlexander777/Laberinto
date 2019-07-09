@@ -6,7 +6,7 @@
 #include <fstream>
 #include <windows.h>
 
-#define Dim 161  // 80 * 2 + 1 = 161 : 80 representa el ancho de la pantalla de consola
+#define Dim 160  // 80 * 2= 160 ; 80 representa el ancho de la pantalla de consola
 #define Celdas 6400  // 80 * 80 = 6400
 #define muro 1 // La pared es true
 #define camino 0 // El camino es false
@@ -18,10 +18,10 @@ void Finesi();
 void Menu();
 void Puntos();
 
-void plantilla(int maze[Dim][Dim]);
-void generador(int indeks, int maze[Dim][Dim], int x_retorno[Celdas], int y_retorno[Celdas], int x, int y, int n, int visitado);
-void mostrar(int maze[Dim][Dim], int dimension);
-int is_closed(int maze[Dim][Dim], int x, int y);
+void plantilla(int laberinto[Dim][Dim]);
+void generador(int indeks, int laberinto[Dim][Dim], int x_retorno[Celdas], int y_retorno[Celdas], int x, int y, int n, int visitado);
+void mostrar(int laberinto[Dim][Dim], int dimension);
+int sin_salida(int laberinto[Dim][Dim], int x, int y);
 
 void gotoxy(int x,int y)
 {  
@@ -60,105 +60,105 @@ void Finesi()
 	system("cls");
 }
 
-void plantilla(int maze[Dim][Dim])
+void plantilla(int laberinto[Dim][Dim])
 {
      for(int i= 0; i< Dim; i++)
      {
          for(int j= 0; j< Dim; j++)
          {
              if(i%2==0 || j%2==0)
-                 maze[i][j]= 1;
+                 laberinto[i][j]= 1;
              else
-                 maze[i][j]= camino;
+                 laberinto[i][j]= camino;
          }
      }
      
 }
 
-void generador(int indeks, int maze[Dim][Dim], int x_retorno[Celdas], int y_retorno[Celdas], int x, int y, int n, int visitado)
+void generador(int indeks, int laberinto[Dim][Dim], int x_retorno[Celdas], int y_retorno[Celdas], int x, int y, int n, int visitado)
 {
     if(visitado< n*n)
     {
-        int neighbour_valid= -1;
-        int neighbour_x[4];
-        int neighbour_y[4];
-        int step[4];
+        int vecino_true= -1;
+        int vecino_x[4];
+        int vecino_y[4];
+        int pasos[4];
 
         int x_sig;
         int y_sig;
 
-        if(x - 2 > 0 && is_closed(maze, x - 2, y))  // upside
+        if(x - 2 > 0 && sin_salida(laberinto, x - 2, y))  // Arriba
         {
-            neighbour_valid++;
+            vecino_true++;
             
-            neighbour_x[neighbour_valid]=x-2;;
-            neighbour_y[neighbour_valid]=y;
+            vecino_x[vecino_true]=x-2;;
+            vecino_y[vecino_true]=y;
             
-            step[neighbour_valid]=1;
+            pasos[vecino_true]=1;
         }
 
-        if(y - 2 > 0 && is_closed(maze, x, y - 2))  // leftside
+        if(y - 2 > 0 && sin_salida(laberinto, x, y - 2))  // Izquierda
         {
-            neighbour_valid++;
+            vecino_true++;
             
-            neighbour_x[neighbour_valid]= x;
-            neighbour_y[neighbour_valid]= y-2;
+            vecino_x[vecino_true]= x;
+            vecino_y[vecino_true]= y-2;
             
-            step[neighbour_valid]=2;
+            pasos[vecino_true]=2;
         }
 
-        if(y + 2< n * 2 + 1 && is_closed(maze, x, y + 2))  // rightside
+        if(y + 2< n * 2 + 1 && sin_salida(laberinto, x, y + 2))  // Derecha
         {
-            neighbour_valid++;
-            neighbour_x[neighbour_valid]=x;
-            neighbour_y[neighbour_valid]=y + 2;
-            step[neighbour_valid]=3;
+            vecino_true++;
+            vecino_x[vecino_true]=x;
+            vecino_y[vecino_true]=y + 2;
+            pasos[vecino_true]=3;
 
         }
 
-        if(x + 2< n * 2 + 1 && is_closed(maze, x + 2, y))  // downside
+        if(x + 2< n * 2 + 1 && sin_salida(laberinto, x + 2, y))  // Abajo
         {
-            neighbour_valid++;
-            neighbour_x[neighbour_valid]=x+2;
-            neighbour_y[neighbour_valid]=y;
-            step[neighbour_valid]=4;
+            vecino_true++;
+            vecino_x[vecino_true]=x+2;
+            vecino_y[vecino_true]=y;
+            pasos[vecino_true]=4;
         }
 
-        if(neighbour_valid == -1)
+        if(vecino_true == -1)
         {
             x_sig = x_retorno[indeks];
             y_sig = y_retorno[indeks];
             indeks--;
         }
 
-        if(neighbour_valid!=-1)
+        if(vecino_true!=-1)
         {
-            int randomization = neighbour_valid + 1;
-            int random = rand()%randomization;
-            x_sig = neighbour_x[random];
-            y_sig = neighbour_y[random];
+            int asignar = vecino_true + 1;
+            int random = rand()%asignar;
+            x_sig = vecino_x[random];
+            y_sig = vecino_y[random];
             indeks++;
             x_retorno[indeks]= x_sig;
             y_retorno[indeks]= y_sig;
 
-            int rstep = step[random];
+            int rpasos = pasos[random];
 
-            if(rstep == 1)
-                maze[x_sig+1][y_sig]= camino;
-            else if(rstep == 2)
-                maze[x_sig][y_sig + 1]= camino;
-            else if(rstep == 3)
-                maze[x_sig][y_sig - 1]= camino;
-            else if(rstep == 4)
-                maze[x_sig - 1][y_sig]= camino;
+            if(rpasos == 1)
+                laberinto[x_sig+1][y_sig]= camino;
+            else if(rpasos == 2)
+                laberinto[x_sig][y_sig + 1]= camino;
+            else if(rpasos == 3)
+                laberinto[x_sig][y_sig - 1]= camino;
+            else if(rpasos == 4)
+                laberinto[x_sig - 1][y_sig]= camino;
             visitado++;
         }
 
-        generador(indeks, maze, x_retorno, y_retorno, x_sig, y_sig, n, visitado);
+        generador(indeks, laberinto, x_retorno, y_retorno, x_sig, y_sig, n, visitado);
     }
 }
 
-void mostrar(int maze[Dim][Dim], int dimension)
+void mostrar(int laberinto[Dim][Dim], int dimension)
 {
 	ofstream lab;
 	
@@ -169,9 +169,10 @@ void mostrar(int maze[Dim][Dim], int dimension)
     {
      	
      	lab.open("Laberinto.txt", ios::app);
+     	
         for(int j= 0; j< dimension * 2 + 1; j++)
         {
-            if(maze[i][j]== muro)
+            if(laberinto[i][j]== muro)
             {
             	cout<<"1";
                 lab<<"1";
@@ -190,9 +191,9 @@ void mostrar(int maze[Dim][Dim], int dimension)
     }
 }
 
-int is_closed(int maze[Dim][Dim], int x, int y)
+int sin_salida(int laberinto[Dim][Dim], int x, int y)
 {
-    if(maze[x-1][y]==muro && maze[x][y-1]==muro && maze[x][y+1]==muro && maze[x+1][y]==muro)
+    if(laberinto[x-1][y]==muro && laberinto[x][y-1]==muro && laberinto[x][y+1]==muro && laberinto[x+1][y]==muro)
         return 1;
 
     return 0;
@@ -211,15 +212,24 @@ void Menu()
 	cin>>dimension;
 	
 	system("cls");
+	
+	if(dimension > 78)
+	{
+		gotoxy(20,11);
+		cout<<"La dimension maxima permitida es 78*78";
+		Sleep(3000);
+		system("cls");
+		return Menu();
+	}
 
     srand(time(NULL));
-    int size= dimension / 2;
+    int tamanio= dimension / 2;
     int indeks= 0;
-    int maze[Dim][Dim];
+    int laberinto[Dim][Dim];
     int x_retorno[Celdas];
     int y_retorno[Celdas];
 
-    plantilla(maze);
+    plantilla(laberinto);
 
     x_retorno[indeks]= 1;
     y_retorno[indeks]= 1;
@@ -230,9 +240,9 @@ void Menu()
     
     system("cls");
 
-    generador(indeks, maze, x_retorno, y_retorno, 1, 1, size, 1);
-    maze[0][1]= maze[size * 2][size * 2 - 1]= ' ';
-    mostrar(maze, size);
+    generador(indeks, laberinto, x_retorno, y_retorno, 1, 1, tamanio, 1);
+    laberinto[0][1]= laberinto[tamanio * 2][tamanio * 2 - 1]= ' ';
+    mostrar(laberinto, tamanio);
 
 	if(dimension <= 40)
 	{
